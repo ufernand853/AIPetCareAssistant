@@ -43,7 +43,7 @@ fun AppNav() {
             )
         }
         composable("analysis") { PhotoAnalysisScreen(onDone = { navController.navigate("analysisResult") }) }
-        composable("analysisResult") { AnalysisResultScreen(onShare = {}) }
+        composable("analysisResult") { AnalysisResultScreen() }
         composable("reminders") { RemindersScreen() }
         composable("chat") { ChatScreen() }
         composable("settings") {
