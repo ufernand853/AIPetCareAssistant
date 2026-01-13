@@ -15,9 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.aipetcareassistant.R
+import com.example.aipetcareassistant.data.Analysis
 
 @Composable
-fun AnalysisResultScreen() {
+fun AnalysisResultScreen(result: Analysis?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,20 +41,22 @@ fun AnalysisResultScreen() {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text =
-                        "Según la foto, la mascota tiene una condición corporal ideal y el pelaje se ve normal.",
+                    text = result?.summaryText
+                        ?: "Aún no hay un análisis disponible. Sube una foto para generar uno.",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
         Text(
-            text = "Respuesta de la IA: Correcta",
+            text = if (result == null) "Respuesta de la IA: Pendiente" else "Respuesta de la IA: Generada",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary
         )
-        Text(text = "Condición corporal: ideal")
-        Text(text = "Condición del pelaje: normal")
-        Text(text = "Recomendaciones: dieta balanceada y controles veterinarios regulares.")
+        Text(text = "Condición corporal: ${result?.bodyCondition ?: "pendiente"}")
+        Text(text = "Condición del pelaje: ${result?.coatCondition ?: "pendiente"}")
+        Text(
+            text = "Recomendaciones: ${result?.recommendations ?: "completa un análisis para ver sugerencias."}"
+        )
         Text(text = stringResource(id = R.string.disclaimer_short))
     }
 }
