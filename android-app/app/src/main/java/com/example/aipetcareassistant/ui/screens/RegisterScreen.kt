@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.aipetcareassistant.viewmodel.AuthViewModel
@@ -34,24 +36,53 @@ fun RegisterScreen(onRegistered: () -> Unit) {
         }
     }
 
+    val textColor = Color.White
+
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Register")
+        Text(text = "Register", color = textColor)
         OutlinedTextField(
             value = email,
             onValueChange = setEmail,
-            label = { Text("Email") },
+            label = { Text("Email", color = textColor) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textColor,
+                unfocusedTextColor = textColor,
+                focusedLabelColor = textColor,
+                unfocusedLabelColor = textColor,
+                cursorColor = textColor,
+                focusedBorderColor = textColor,
+                unfocusedBorderColor = textColor.copy(alpha = 0.7f)
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = password,
             onValueChange = setPassword,
-            label = { Text("Password") },
+            label = { Text("Password", color = textColor) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textColor,
+                unfocusedTextColor = textColor,
+                focusedLabelColor = textColor,
+                unfocusedLabelColor = textColor,
+                cursorColor = textColor,
+                focusedBorderColor = textColor,
+                unfocusedBorderColor = textColor.copy(alpha = 0.7f)
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = confirm,
             onValueChange = setConfirm,
-            label = { Text("Confirm Password") },
+            label = { Text("Confirm Password", color = textColor) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textColor,
+                unfocusedTextColor = textColor,
+                focusedLabelColor = textColor,
+                unfocusedLabelColor = textColor,
+                cursorColor = textColor,
+                focusedBorderColor = textColor,
+                unfocusedBorderColor = textColor.copy(alpha = 0.7f)
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         Button(
