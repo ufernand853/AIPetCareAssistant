@@ -12,10 +12,13 @@ import androidx.compose.ui.unit.dp
 import com.example.aipetcareassistant.R
 
 @Composable
-fun SettingsScreen(onLogout: () -> Unit) {
+fun SettingsScreen(onViewApiLog: () -> Unit, onLogout: () -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Settings")
         Text(text = stringResource(id = R.string.disclaimer_long))
+        Button(onClick = onViewApiLog, modifier = Modifier.fillMaxWidth()) {
+            Text("API Call Log")
+        }
         Button(onClick = onLogout, modifier = Modifier.fillMaxWidth()) {
             Text("Logout")
         }

@@ -1,6 +1,8 @@
 package com.example.aipetcareassistant.network
 
 import android.content.Context
+import com.example.aipetcareassistant.data.ApiCallLogEntry
+import com.example.aipetcareassistant.data.ApiCallLogStore
 import com.example.aipetcareassistant.data.TokenStore
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -31,8 +33,40 @@ object ApiClient {
             setLevel(HttpLoggingInterceptor.Level.BODY)
         }
 
+        val apiLogInterceptor = Interceptor { chain ->
+            val request = chain.request()
+            val startTime = System.currentTimeMillis()
+            try {
+                val response = chain.proceed(request)
+                val duration = System.currentTimeMillis() - startTime
+                ApiCallLogStore.add(
+                    ApiCallLogEntry(
+                        method = request.method,
+                        url = request.url.toString(),
+                        statusCode = response.code,
+                        durationMs = duration,
+                        timestampMillis = startTime
+                    )
+                )
+                response
+            } catch (exception: Exception) {
+                val duration = System.currentTimeMillis() - startTime
+                ApiCallLogStore.add(
+                    ApiCallLogEntry(
+                        method = request.method,
+                        url = request.url.toString(),
+                        statusCode = -1,
+                        durationMs = duration,
+                        timestampMillis = startTime
+                    )
+                )
+                throw exception
+            }
+        }
+
         val client = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(apiLogInterceptor)
             .addInterceptor(logging)
             .build()
 

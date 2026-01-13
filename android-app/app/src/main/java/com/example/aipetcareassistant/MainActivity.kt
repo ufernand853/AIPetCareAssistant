@@ -46,6 +46,12 @@ fun AppNav() {
         composable("analysisResult") { AnalysisResultScreen(onShare = {}) }
         composable("reminders") { RemindersScreen() }
         composable("chat") { ChatScreen() }
-        composable("settings") { SettingsScreen(onLogout = { navController.navigate("login") }) }
+        composable("settings") {
+            SettingsScreen(
+                onViewApiLog = { navController.navigate("apiLog") },
+                onLogout = { navController.navigate("login") }
+            )
+        }
+        composable("apiLog") { ApiLogScreen(onBack = { navController.popBackStack() }) }
     }
 }
