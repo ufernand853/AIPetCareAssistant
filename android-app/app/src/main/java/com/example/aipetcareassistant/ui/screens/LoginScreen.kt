@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.aipetcareassistant.viewmodel.AuthViewModel
 
@@ -27,7 +28,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegister: () -> Unit) {
     val errorMessage by authViewModel.errorMessage.collectAsState()
     val (email, setEmail) = remember { mutableStateOf("") }
     val (password, setPassword) = remember { mutableStateOf("") }
-    val textColor = MaterialTheme.colorScheme.onBackground
+    val textColor = Color.White
 
     LaunchedEffect(authState) {
         if (authState == "success") {
