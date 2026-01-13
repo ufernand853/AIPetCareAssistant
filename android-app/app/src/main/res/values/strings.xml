@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AI Pet Care Assistant</string>
+    <string name="disclaimer_long">AI Pet Care Assistant provides general pet care guidance only. It does not replace professional veterinary diagnosis, treatment, or advice. Always consult a licensed veterinarian for health issues or emergencies.</string>
+    <string name="disclaimer_short">This is not a veterinary diagnosis. Consult a veterinarian for medical concerns.</string>
+</resources>
