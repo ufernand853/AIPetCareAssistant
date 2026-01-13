@@ -7,6 +7,8 @@ export interface AnalysisDocument extends Document {
   petId: mongoose.Types.ObjectId;
   ownerId: mongoose.Types.ObjectId;
   imageUrl: string;
+  breedGuess: string;
+  appearanceNotes: string;
   bodyCondition: BodyCondition;
   coatCondition: CoatCondition;
   summaryText: string;
@@ -19,6 +21,8 @@ const AnalysisSchema = new Schema<AnalysisDocument>(
     petId: { type: Schema.Types.ObjectId, ref: "Pet", required: true },
     ownerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     imageUrl: { type: String, required: true },
+    breedGuess: { type: String, required: true },
+    appearanceNotes: { type: String, required: true },
     bodyCondition: {
       type: String,
       enum: ["underweight", "ideal", "overweight", "unknown"],

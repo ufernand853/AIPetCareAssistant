@@ -31,6 +31,8 @@ data class PetRequest(
 data class Analysis(
     val _id: String,
     val imageUrl: String,
+    val breedGuess: String,
+    val appearanceNotes: String,
     val bodyCondition: String,
     val coatCondition: String,
     val summaryText: String,
