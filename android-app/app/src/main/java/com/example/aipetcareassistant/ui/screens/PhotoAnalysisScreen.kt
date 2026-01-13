@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import androidx.compose.foundation.layout.Arrangement
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +32,23 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.aipetcareassistant.data.Analysis
+import com.example.aipetcareassistant.network.ApiClient
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
 @Composable
-fun PhotoAnalysisScreen(onDone: () -> Unit) {
+fun PhotoAnalysisScreen(petId: String, onDone: (Analysis) -> Unit) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val api = remember { ApiClient.create(context) }
     var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
@@ -84,7 +97,10 @@ fun PhotoAnalysisScreen(onDone: () -> Unit) {
         }
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Text(text = "Sube una foto para el análisis")
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -128,6 +144,10 @@ fun PhotoAnalysisScreen(onDone: () -> Unit) {
             Text(text = errorMessage ?: "", color = MaterialTheme.colorScheme.error)
         }
 
+        if (isLoading) {
+            CircularProgressIndicator()
+        }
+
         selectedBitmap?.let { bitmap ->
             Spacer(modifier = Modifier.height(16.dp))
             Image(
@@ -142,11 +162,30 @@ fun PhotoAnalysisScreen(onDone: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = onDone,
-            enabled = selectedBitmap != null,
+            onClick = {
+                val bitmap = selectedBitmap
+                if (bitmap == null) {
+                    errorMessage = "Selecciona una imagen antes de continuar."
+                } else {
+                    errorMessage = null
+                    isLoading = true
+                    coroutineScope.launch {
+                        try {
+                            val part = bitmap.toJpegPart()
+                            val analysis = api.uploadPhoto(petId, part)
+                            onDone(analysis)
+                        } catch (exception: Exception) {
+                            errorMessage = "No se pudo analizar la imagen. Intenta nuevamente."
+                        } finally {
+                            isLoading = false
+                        }
+                    }
+                }
+            },
+            enabled = selectedBitmap != null && !isLoading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Continuar")
+            Text(if (isLoading) "Analizando..." else "Continuar")
         }
     }
 }
@@ -162,4 +201,12 @@ private fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap? {
             }
         }
     }.getOrNull()
+}
+
+private fun Bitmap.toJpegPart(): MultipartBody.Part {
+    val output = ByteArrayOutputStream()
+    compress(Bitmap.CompressFormat.JPEG, 90, output)
+    val bytes = output.toByteArray()
+    val requestBody = bytes.toRequestBody("image/jpeg".toMediaType())
+    return MultipartBody.Part.createFormData("image", "photo.jpg", requestBody)
 }

@@ -9,16 +9,31 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.aipetcareassistant.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit, onRegister: () -> Unit) {
+    val context = LocalContext.current
+    val authViewModel = remember { AuthViewModel(context) }
+    val authState by authViewModel.authState.collectAsState()
+    val errorMessage by authViewModel.errorMessage.collectAsState()
     val (email, setEmail) = remember { mutableStateOf("") }
     val (password, setPassword) = remember { mutableStateOf("") }
     val textColor = MaterialTheme.colorScheme.onBackground
+
+    LaunchedEffect(authState) {
+        if (authState == "success") {
+            onLoginSuccess()
+        }
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Login", color = textColor)
@@ -52,8 +67,14 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onRegister: () -> Unit) {
             ),
             modifier = Modifier.fillMaxWidth()
         )
-        Button(onClick = onLoginSuccess, modifier = Modifier.fillMaxWidth()) {
-            Text("Login")
+        Button(
+            onClick = { authViewModel.login(email, password) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(if (authState == "loading") "Ingresando..." else "Login")
+        }
+        if (errorMessage != null) {
+            Text(text = errorMessage ?: "", color = MaterialTheme.colorScheme.error)
         }
         Button(onClick = onRegister, modifier = Modifier.fillMaxWidth()) {
             Text("Go to Register")
