@@ -8,12 +8,15 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2:4000/api/"
+    const val BASE_URL = "http://10.0.2.2:4000/api/"
+    val baseHost: String
+        get() = BASE_URL.toHttpUrlOrNull()?.host ?: BASE_URL
 
     fun create(context: Context): ApiService {
         val tokenStore = TokenStore(context)
